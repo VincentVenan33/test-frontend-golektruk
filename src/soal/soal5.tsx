@@ -1,19 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
 const Soal5 = () => {
   // 5. buatlah fungsi untuk menutup modal ketika tombol back browser diklik
   const [openModal, setOpenModal] = useState<boolean>(false);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      if (openModal) {
+        setOpenModal(false);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [openModal]);
+  const TombolModal = () => {
+    setOpenModal((prev) => !prev);
+
+    if (!openModal) {
+      history.pushState(null, "", location.href);
+    }
+  };
   return (
     <>
       <div style={{ margin: "1rem" }}>
         {openModal && <Modal />}
         <button
           style={{ padding: "2px 4px", background: "white" }}
-          onClick={() => {
-            setOpenModal((prev) => !prev);
-          }}
+          onClick={TombolModal}
         >
           {openModal ? "close" : "open"} modal
         </button>
@@ -26,7 +44,7 @@ const Soal5 = () => {
           position: "fixed",
           bottom: 0,
           right: 0,
-          border: "1px solid white",
+          border: "1px solid white"
         }}
       ></iframe>
     </>
@@ -38,7 +56,14 @@ const Modal = () => {
 
   if (!modalRoot) return <></>;
   return ReactDOM.createPortal(
-    <section style={{ background: "#8f9cb0", padding: "3rem", position: "fixed", margin: "6rem" }}>
+    <section
+      style={{
+        background: "#8f9cb0",
+        padding: "3rem",
+        position: "fixed",
+        margin: "6rem"
+      }}
+    >
       <div>This is modal</div>
     </section>,
     modalRoot
